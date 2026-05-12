@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
-import { ProposalStatus } from '@prisma/client'
+import { ProposalStatus } from '@/lib/enums'
 import Link from 'next/link'
 import SwapCard from '@/components/SwapCard'
 import ProposalCard from '@/components/ProposalCard'
