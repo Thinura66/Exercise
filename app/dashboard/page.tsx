@@ -5,6 +5,7 @@ import { ProposalStatus } from '@prisma/client'
 import Link from 'next/link'
 import SwapCard from '@/components/SwapCard'
 import ProposalCard from '@/components/ProposalCard'
+import { signOutUser } from '@/actions/auth'
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -87,6 +88,15 @@ export default async function DashboardPage() {
             >
               {userName.charAt(0).toUpperCase()}
             </div>
+            <form action={signOutUser}>
+              <button
+                type="submit"
+                className="text-xs font-medium transition-colors hover:opacity-80"
+                style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+              >
+                Sign Out
+              </button>
+            </form>
           </nav>
         </div>
       </header>

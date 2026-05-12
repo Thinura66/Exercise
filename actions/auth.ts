@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
-import { signIn } from '@/auth'
+import { signIn, signOut } from '@/auth'
 import { AuthError } from 'next-auth'
 
 export type ActionState = { success: false; error: string } | null
@@ -66,4 +66,8 @@ export async function signInUser(
   }
 
   return null
+}
+
+export async function signOutUser() {
+  await signOut({ redirectTo: '/auth/signin' })
 }

@@ -40,6 +40,6 @@ model Proposal {
   createdAt             DateTime       @default(now())
   updatedAt             DateTime       @updatedAt
 
-  proposer    User @relation("ProposalProposer",    fields: [proposerId],    references: [id])
+  proposer    User @relation("ProposalProposer", fields: [proposerId], references: [id])
   counterpart User @relation("ProposalCounterpart", fields: [counterpartId], references: [id])
 }
