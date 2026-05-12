@@ -1,7 +1,12 @@
+import { auth } from '@/auth'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export function proxy(_request: NextRequest) {
+export async function proxy(request: NextRequest) {
+  const session = await auth()
+  if (!session) {
+    return NextResponse.redirect(new URL('/auth/signin', request.url))
+  }
   return NextResponse.next()
 }
 
