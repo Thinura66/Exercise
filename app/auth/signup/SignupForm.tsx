@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useActionState } from 'react'
 import { createUser, type ActionState } from '@/actions/auth'
 
@@ -15,21 +16,27 @@ export default function SignupForm() {
       <p className="text-sm text-gray-500 text-center mb-6">Create your account</p>
 
       <form action={formAction} className="flex flex-col gap-4">
+        <label htmlFor="name" className="sr-only">Full name</label>
         <input
+          id="name"
           name="name"
           type="text"
           placeholder="Full name"
           required
           className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
+        <label htmlFor="email" className="sr-only">Email address</label>
         <input
+          id="email"
           name="email"
           type="email"
           placeholder="Email address"
           required
           className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
+        <label htmlFor="password" className="sr-only">Password</label>
         <input
+          id="password"
           name="password"
           type="password"
           placeholder="Password (min 8 characters)"
@@ -39,7 +46,7 @@ export default function SignupForm() {
         />
 
         {state?.error && (
-          <p role="alert" className="text-red-600 text-sm -mt-1">
+          <p id="form-error" role="alert" className="text-red-600 text-sm -mt-1">
             {state.error}
           </p>
         )}
@@ -47,6 +54,7 @@ export default function SignupForm() {
         <button
           type="submit"
           disabled={pending}
+          aria-disabled={pending}
           className="bg-indigo-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {pending ? 'Creating account…' : 'Create account'}
@@ -55,9 +63,9 @@ export default function SignupForm() {
 
       <p className="text-center text-sm text-gray-500 mt-4">
         Already have an account?{' '}
-        <a href="/auth/signin" className="text-indigo-600 hover:underline">
+        <Link href="/auth/signin" className="text-indigo-600 hover:underline">
           Sign in
-        </a>
+        </Link>
       </p>
     </div>
   )
