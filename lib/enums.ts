@@ -1,0 +1,7 @@
+export enum ProposalStatus {
+  PENDING = 'PENDING',
+  AGREED = 'AGREED',
+  DECLINED = 'DECLINED',
+  COUNTERED = 'COUNTERED',
+  CANCELLED = 'CANCELLED',
+}

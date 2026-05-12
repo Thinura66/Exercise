@@ -2,14 +2,14 @@
 
 import { useState } from 'react'
 import { useActionState } from 'react'
-import { ProposalStatus } from '@prisma/client'
+import { ProposalStatus } from '@/lib/enums'
 import { respondToProposal, acceptCounter, type ProposalActionState } from '@/actions/proposals'
 
 interface Proposal {
   id: string
   offeredSkill: string
   requestedSkill: string
-  status: ProposalStatus
+  status: string
   counterOfferedSkill: string | null
   counterRequestedSkill: string | null
   proposerId: string
