@@ -1,12 +1,4 @@
 {
-  "extraKnownMarketplaces": {
-    "embla-claude-plugins": {
-      "source": {
-        "source": "git",
-        "url": "https://bitbucket.org/emblaftdev/embla-claude-plugins.git"
-      }
-    }
-  },
   "enabledPlugins": {
     "atlassian@claude-plugins-official": true,
     "embla-core@embla-claude-plugins": true,
@@ -18,5 +10,13 @@
     "claude-md-management@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": true,
     "playwright@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "embla-claude-plugins": {
+      "source": {
+        "source": "git",
+        "url": "https://bitbucket.org/emblaftdev/embla-claude-plugins.git"
+      }
+    }
   }
 }
