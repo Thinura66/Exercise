@@ -3,6 +3,13 @@
 import { useActionState } from 'react'
 import { createProposal, type ProposalActionState } from '@/actions/proposals'
 
+const selectStyle = {
+  background: '#0f172a',
+  border: '1px solid #334155',
+  color: '#f8fafc',
+  outline: 'none',
+}
+
 interface Props {
   counterpartId: string
   callerCanTeach: string[]
@@ -17,33 +24,45 @@ export default function ProposeForm({ counterpartId, callerCanTeach, targetCanTe
 
   if (callerCanTeach.length === 0 || targetCanTeach.length === 0) {
     return (
-      <div className="bg-white rounded-xl shadow-md p-6 w-full max-w-md mt-4">
-        <h2 className="text-lg font-semibold mb-2">Propose a Swap</h2>
-        <p className="text-sm text-gray-500">
+      <div
+        className="rounded-2xl p-6"
+        style={{ background: '#1e293b', border: '1px solid #334155' }}
+      >
+        <h2 className="text-sm font-semibold mb-2" style={{ color: '#f8fafc' }}>Propose a Swap</h2>
+        <p className="text-xs leading-relaxed" style={{ color: '#64748b' }}>
           {callerCanTeach.length === 0
-            ? 'Add skills to your profile before proposing a swap.'
-            : 'This user has no skills listed yet.'}
+            ? '⚠ Add skills to your profile before proposing a swap.'
+            : '⚠ This user has no skills listed yet — they need to update their profile.'}
         </p>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 w-full max-w-md mt-4">
-      <h2 className="text-lg font-semibold mb-4">Propose a Swap</h2>
+    <div
+      className="rounded-2xl p-6"
+      style={{ background: '#1e293b', border: '1px solid #334155' }}
+    >
+      <div className="flex items-center gap-2 mb-5">
+        <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#f59e0b' }} />
+        <h2 className="text-sm font-semibold" style={{ color: '#f8fafc' }}>Propose a Swap</h2>
+      </div>
 
       <form action={formAction} className="flex flex-col gap-4">
         <input type="hidden" name="counterpartId" value={counterpartId} />
 
         <div>
-          <label htmlFor="offeredSkill" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="offeredSkill" className="block text-xs font-medium mb-1.5" style={{ color: '#94a3b8' }}>
             I will teach
           </label>
           <select
             id="offeredSkill"
             name="offeredSkill"
             required
-            className="border rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-3 py-2.5 text-sm rounded-lg transition-all"
+            style={selectStyle}
+            onFocus={(e) => { e.currentTarget.style.borderColor = '#f59e0b'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(245,158,11,0.15)' }}
+            onBlur={(e) => { e.currentTarget.style.borderColor = '#334155'; e.currentTarget.style.boxShadow = 'none' }}
           >
             <option value="">Select a skill…</option>
             {callerCanTeach.map((skill) => (
@@ -52,15 +71,23 @@ export default function ProposeForm({ counterpartId, callerCanTeach, targetCanTe
           </select>
         </div>
 
+        {/* Exchange arrow */}
+        <div className="flex items-center justify-center">
+          <div className="text-lg" style={{ color: '#334155' }}>⇅</div>
+        </div>
+
         <div>
-          <label htmlFor="requestedSkill" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="requestedSkill" className="block text-xs font-medium mb-1.5" style={{ color: '#94a3b8' }}>
             They will teach me
           </label>
           <select
             id="requestedSkill"
             name="requestedSkill"
             required
-            className="border rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-3 py-2.5 text-sm rounded-lg transition-all"
+            style={selectStyle}
+            onFocus={(e) => { e.currentTarget.style.borderColor = '#22c55e'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(34,197,94,0.15)' }}
+            onBlur={(e) => { e.currentTarget.style.borderColor = '#334155'; e.currentTarget.style.boxShadow = 'none' }}
           >
             <option value="">Select a skill…</option>
             {targetCanTeach.map((skill) => (
@@ -70,16 +97,33 @@ export default function ProposeForm({ counterpartId, callerCanTeach, targetCanTe
         </div>
 
         {state?.error && (
-          <p role="alert" className="text-red-600 text-sm">{state.error}</p>
+          <div
+            role="alert"
+            className="flex items-center gap-2 text-xs px-3 py-2 rounded-lg"
+            style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#fca5a5' }}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            {state.error}
+          </div>
         )}
+
+        {state === null && !pending ? null : state === null && pending ? null : null}
 
         <button
           type="submit"
           disabled={pending}
           aria-disabled={pending}
-          className="bg-indigo-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-2.5 text-sm font-semibold rounded-lg transition-all mt-1"
+          style={{
+            background: pending ? '#92400e' : 'linear-gradient(135deg, #f59e0b, #d97706)',
+            color: '#0f172a',
+            opacity: pending ? 0.7 : 1,
+            cursor: pending ? 'not-allowed' : 'pointer',
+          }}
         >
-          {pending ? 'Sending…' : 'Propose swap'}
+          {pending ? 'Sending proposal…' : 'Send swap proposal →'}
         </button>
       </form>
     </div>

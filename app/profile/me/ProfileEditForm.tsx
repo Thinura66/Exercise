@@ -16,36 +16,55 @@ export default function ProfileEditForm({ initialCanTeach, initialWantToLearn }:
   )
 
   return (
-    <form action={formAction} className="flex flex-col gap-6 w-full max-w-md">
-      <TagEditor
-        name="canTeach"
-        label="Can Teach"
-        initialTags={initialCanTeach}
-      />
-      <TagEditor
-        name="wantToLearn"
-        label="Wants to Learn"
-        initialTags={initialWantToLearn}
-      />
+    <form action={formAction} className="flex flex-col gap-6 w-full">
+      <TagEditor name="canTeach" label="Can Teach" initialTags={initialCanTeach} />
+      <TagEditor name="wantToLearn" label="Wants to Learn" initialTags={initialWantToLearn} />
 
       {state?.success === false && (
-        <p role="alert" className="text-red-600 text-sm">
+        <div
+          role="alert"
+          className="flex items-center gap-2 text-xs px-3 py-2.5 rounded-lg"
+          style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#fca5a5' }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
           {state.error}
-        </p>
+        </div>
       )}
       {state?.success === true && (
-        <p role="status" className="text-emerald-600 text-sm font-medium">
+        <div
+          role="status"
+          className="flex items-center gap-2 text-xs px-3 py-2.5 rounded-lg"
+          style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', color: '#86efac' }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
           Profile updated successfully.
-        </p>
+        </div>
       )}
 
       <button
         type="submit"
         disabled={pending}
         aria-disabled={pending}
-        className="bg-indigo-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full py-2.5 text-sm font-semibold rounded-lg transition-all duration-150"
+        style={{
+          background: pending ? '#92400e' : 'linear-gradient(135deg, #f59e0b, #d97706)',
+          color: '#0f172a',
+          opacity: pending ? 0.7 : 1,
+          cursor: pending ? 'not-allowed' : 'pointer',
+        }}
       >
-        {pending ? 'Saving…' : 'Save profile'}
+        {pending ? (
+          <span className="flex items-center justify-center gap-2">
+            <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+            </svg>
+            Saving…
+          </span>
+        ) : 'Save profile →'}
       </button>
     </form>
   )
