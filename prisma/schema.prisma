@@ -6,6 +6,14 @@ datasource db {
   provider = "postgresql"
 }
 
+enum ProposalStatus {
+  PENDING
+  AGREED
+  DECLINED
+  COUNTERED
+  CANCELLED
+}
+
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
@@ -15,4 +23,23 @@ model User {
   wantToLearn  String[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  proposalsAsProposer    Proposal[] @relation("ProposalProposer")
+  proposalsAsCounterpart Proposal[] @relation("ProposalCounterpart")
+}
+
+model Proposal {
+  id                    String         @id @default(cuid())
+  proposerId            String
+  counterpartId         String
+  offeredSkill          String
+  requestedSkill        String
+  status                ProposalStatus @default(PENDING)
+  counterOfferedSkill   String?
+  counterRequestedSkill String?
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+
+  proposer    User @relation("ProposalProposer",    fields: [proposerId],    references: [id])
+  counterpart User @relation("ProposalCounterpart", fields: [counterpartId], references: [id])
 }
