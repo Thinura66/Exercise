@@ -14,7 +14,7 @@ export async function createUser(
 ): Promise<ActionState> {
   const name = (formData.get('name') as string | null)?.trim() ?? ''
   const email = (formData.get('email') as string | null)?.trim().toLowerCase() ?? ''
-  const password = (formData.get('password') as string | null)?.trim() ?? ''
+  const password = (formData.get('password') as string | null) ?? ''
 
   if (!name || !email || !password) {
     return { success: false, error: 'All fields are required.' }
