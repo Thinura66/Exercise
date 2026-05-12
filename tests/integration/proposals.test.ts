@@ -1,16 +1,27 @@
-import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest'
+import { describe, it, expect, beforeAll, beforeEach, afterAll, vi } from 'vitest'
 import type { PrismaClient } from '@prisma/client'
 import type { Pool } from 'pg'
+import { createTestPrisma, createUser, createProposal, closeTestPrisma } from './helpers'
 
-// ── Module mocks (hoisted before imports) ──
+// ── Create test client at module scope (once for the whole suite) ──
+let db: PrismaClient
+let pool: Pool
+const testClient = createTestPrisma()
+db = testClient.db
+pool = testClient.pool
+
+// ── Module mocks (hoisted before other imports) ──
 vi.mock('@/lib/auth-helpers', () => ({
   getAuthenticatedUserId: vi.fn(),
 }))
 vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
 }))
+vi.mock('@/lib/prisma', () => ({
+  get prisma() { return db },
+}))
 
-// ── Import after mocks are registered ──
+// ── Import Server Actions after mocks are registered ──
 import { getAuthenticatedUserId } from '@/lib/auth-helpers'
 import {
   createProposal as createProposalAction,
@@ -18,18 +29,11 @@ import {
   acceptCounter,
   cancelSwap,
 } from '@/actions/proposals'
-import { createTestPrisma, createUser, createProposal, closeTestPrisma } from './helpers'
 
 const mockAuth = vi.mocked(getAuthenticatedUserId)
 
-let db: PrismaClient
-let pool: Pool
-
 beforeEach(async () => {
-  const client = createTestPrisma()
-  db = client.db
-  pool = client.pool
-  // Clear all data between tests (order matters for FK constraints)
+  vi.resetAllMocks()
   await db.proposal.deleteMany()
   await db.user.deleteMany()
 })
@@ -70,14 +74,14 @@ describe('createProposal', () => {
   })
 
   it('rejects when offeredSkill is not in caller canTeach', async () => {
-    const alice = await createUser(db, { email: 'alice@test.com', canTeach: ['TypeScript'] })
-    const bob   = await createUser(db, { email: 'bob@test.com',   canTeach: ['Rust'] })
+    const alice = await createUser(db, { email: 'alice@test.com', canTeach: ['TypeScript'], wantToLearn: ['Go'] })
+    const bob   = await createUser(db, { email: 'bob@test.com',   canTeach: ['Rust'],       wantToLearn: ['TypeScript'] })
 
     mockAuth.mockResolvedValueOnce(alice.id)
 
     const result = await createProposalAction(null, fd({
       counterpartId: bob.id,
-      offeredSkill: 'Rust',
+      offeredSkill: 'Rust',       // alice cannot teach Rust
       requestedSkill: 'Rust',
     }))
 
@@ -200,16 +204,35 @@ describe('stale action rejection', () => {
   })
 })
 
+// ── cancelSwap ────────────────────────────────────────────────────────────────
+
+describe('cancelSwap', () => {
+  it('cancels an AGREED swap when called by either party', async () => {
+    const alice = await createUser(db, { email: 'alice@test.com', canTeach: ['TypeScript'] })
+    const bob   = await createUser(db, { email: 'bob@test.com',   canTeach: ['Go'] })
+    const proposal = await createProposal(db, alice.id, bob.id)
+    await db.proposal.update({ where: { id: proposal.id }, data: { status: 'AGREED' } })
+
+    mockAuth.mockResolvedValueOnce(alice.id)
+
+    const result = await cancelSwap(null, fd({ proposalId: proposal.id }))
+
+    expect(result).toBeNull()
+
+    const updated = await db.proposal.findUniqueOrThrow({ where: { id: proposal.id } })
+    expect(updated.status).toBe('CANCELLED')
+  })
+})
+
 // ── Email visibility ──────────────────────────────────────────────────────────
 
 describe('email visibility', () => {
-  it('excludes email when querying proposal parties without select', async () => {
+  it('excludes email when querying proposal parties without email in select', async () => {
     const alice = await createUser(db, { email: 'alice@test.com', canTeach: ['TypeScript'] })
     const bob   = await createUser(db, { email: 'bob@test.com',   canTeach: ['Go'] })
 
     await createProposal(db, alice.id, bob.id)
 
-    // Query with explicit select that omits email — verify exclusion works
     const aliceProposals = await db.proposal.findMany({
       where: { proposerId: alice.id },
       include: {
