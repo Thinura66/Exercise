@@ -3,6 +3,8 @@
 import { redirect } from 'next/navigation'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
+import { signIn } from '@/auth'
+import { AuthError } from 'next-auth'
 
 export type ActionState = { success: false; error: string } | null
 
@@ -41,4 +43,27 @@ export async function createUser(
   }
 
   redirect('/dashboard')
+}
+
+export async function signInUser(
+  _prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const email = (formData.get('email') as string | null)?.trim().toLowerCase() ?? ''
+  const password = (formData.get('password') as string | null) ?? ''
+
+  if (!email || !password) {
+    return { success: false, error: 'All fields are required.' }
+  }
+
+  try {
+    await signIn('credentials', { email, password, redirectTo: '/dashboard' })
+  } catch (e) {
+    if (e instanceof AuthError) {
+      return { success: false, error: 'Invalid email or password.' }
+    }
+    throw e // re-throw NEXT_REDIRECT so redirect propagates — do NOT remove
+  }
+
+  return null
 }
