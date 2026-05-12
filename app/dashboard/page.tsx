@@ -51,7 +51,7 @@ export default async function DashboardPage() {
 
   const wantToLearn = sessionUser?.wantToLearn ?? []
 
-  const matchedColleagues = wantToLearn.length > 0
+  const matchedColleagues: { id: string; name: string; canTeach: string[] }[] = wantToLearn.length > 0
     ? await prisma.user.findMany({
         where: {
           id: { not: userId },
@@ -60,7 +60,7 @@ export default async function DashboardPage() {
         select: { id: true, name: true, canTeach: true },
         orderBy: { name: 'asc' },
       })
-    : ([] as { id: string; name: string; canTeach: string[] }[])
+    : []
 
   const callerCanTeach = sessionUser?.canTeach ?? []
 
