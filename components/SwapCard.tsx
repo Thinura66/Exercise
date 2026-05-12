@@ -71,7 +71,7 @@ export default function SwapCard({ proposal, viewerId }: Props) {
         </div>
       </div>
 
-      {state?.error && (
+      {state?.success === false && state.error && (
         <div
           role="alert"
           className="flex items-center gap-2 text-xs px-3 py-2 rounded-lg mb-3"

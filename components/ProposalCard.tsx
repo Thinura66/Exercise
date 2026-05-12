@@ -53,7 +53,7 @@ export default function ProposalCard({
 
   const isProposer = viewerId === proposal.proposerId
   const isCounterpart = viewerId === proposal.counterpartId
-  const error = respondState?.error ?? acceptCounterState?.error
+  const error = (respondState?.success === false ? respondState.error : undefined) ?? (acceptCounterState?.success === false ? acceptCounterState.error : undefined)
 
   const mySkill = isProposer ? proposal.offeredSkill : proposal.requestedSkill
   const theirSkill = isProposer ? proposal.requestedSkill : proposal.offeredSkill

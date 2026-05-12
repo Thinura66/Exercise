@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma'
 import { getAuthenticatedUserId } from '@/lib/auth-helpers'
 import { isSkillInList, canAccept, canCounter, canDecline, canCancel } from '@/lib/guards'
 
-export type ProposalActionState = { success: false; error: string } | null
+export type ProposalActionState = { success: true } | { success: false; error: string } | null
 
 // ─── createProposal ────────────────────────────────────────────────
 
@@ -60,7 +60,7 @@ export async function createProposal(
   })
 
   revalidatePath('/dashboard')
-  return null
+  return { success: true }
 }
 
 // ─── respondToProposal ─────────────────────────────────────────────

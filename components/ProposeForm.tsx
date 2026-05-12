@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useActionState } from 'react'
 import { createProposal, type ProposalActionState } from '@/actions/proposals'
 
@@ -38,6 +39,37 @@ export default function ProposeForm({ counterpartId, callerCanTeach, targetCanTe
     )
   }
 
+  if (state?.success === true) {
+    return (
+      <div
+        className="rounded-2xl p-6"
+        style={{ background: '#1e293b', border: '1px solid #334155' }}
+      >
+        <div className="flex items-center gap-2 mb-5">
+          <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#f59e0b' }} />
+          <h2 className="text-sm font-semibold" style={{ color: '#f8fafc' }}>Propose a Swap</h2>
+        </div>
+        <div
+          className="rounded-xl p-6 text-center"
+          style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)' }}
+        >
+          <div className="text-2xl mb-3" style={{ color: '#22c55e' }}>✓</div>
+          <p className="text-sm font-semibold mb-1" style={{ color: '#22c55e' }}>Proposal sent!</p>
+          <p className="text-xs leading-relaxed mb-4" style={{ color: '#64748b' }}>
+            Check your dashboard to track the response.
+          </p>
+          <Link
+            href="/dashboard"
+            className="text-xs font-semibold"
+            style={{ color: '#f59e0b' }}
+          >
+            Go to dashboard →
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div
       className="rounded-2xl p-6"
@@ -71,7 +103,6 @@ export default function ProposeForm({ counterpartId, callerCanTeach, targetCanTe
           </select>
         </div>
 
-        {/* Exchange arrow */}
         <div className="flex items-center justify-center">
           <div className="text-lg" style={{ color: '#334155' }}>⇅</div>
         </div>
@@ -108,8 +139,6 @@ export default function ProposeForm({ counterpartId, callerCanTeach, targetCanTe
             {state.error}
           </div>
         )}
-
-        {state === null && !pending ? null : state === null && pending ? null : null}
 
         <button
           type="submit"
