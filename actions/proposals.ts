@@ -1,9 +1,10 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { ProposalStatus } from '@prisma/client'
+import { ProposalStatus } from '@/lib/enums'
 import { prisma } from '@/lib/prisma'
 import { getAuthenticatedUserId } from '@/lib/auth-helpers'
+import { isSkillInList, canAccept, canCounter, canDecline, canCancel } from '@/lib/guards'
 
 export type ProposalActionState = { success: false; error: string } | null
 
@@ -29,10 +30,10 @@ export async function createProposal(
     prisma.user.findUnique({ where: { id: counterpartId }, select: { canTeach: true } }),
   ])
 
-  if (!caller?.canTeach.includes(offeredSkill)) {
+  if (!isSkillInList(offeredSkill, caller?.canTeach ?? [])) {
     return { success: false, error: "You can only offer skills from your 'can teach' list" }
   }
-  if (!counterpart?.canTeach.includes(requestedSkill)) {
+  if (!isSkillInList(requestedSkill, counterpart?.canTeach ?? [])) {
     return { success: false, error: "That skill is not in the other user's 'can teach' list" }
   }
 
@@ -94,42 +95,35 @@ export async function respondToProposal(
   }
 
   if (action === 'accept') {
-    if (!isCounterpart || proposal.status !== ProposalStatus.PENDING) {
+    if (!canAccept(proposal, userIdOrError)) {
       return { success: false, error: 'This proposal is no longer open' }
     }
     await prisma.proposal.update({ where: { id: proposalId }, data: { status: ProposalStatus.AGREED } })
   }
 
   if (action === 'decline') {
-    const canDecline =
-      (isCounterpart && proposal.status === ProposalStatus.PENDING) ||
-      (isProposer && proposal.status === ProposalStatus.COUNTERED)
-    if (!canDecline) {
+    if (!canDecline(proposal, userIdOrError)) {
       return { success: false, error: 'This proposal is no longer open' }
     }
     await prisma.proposal.update({ where: { id: proposalId }, data: { status: ProposalStatus.DECLINED } })
   }
 
   if (action === 'counter') {
-    if (!isCounterpart || proposal.status !== ProposalStatus.PENDING) {
+    if (!canCounter(proposal, userIdOrError)) {
       return { success: false, error: 'This proposal is no longer open' }
     }
     if (!counterOfferedSkill || !counterRequestedSkill) {
       return { success: false, error: 'Both counter skills are required.' }
     }
-    if (!proposal.counterpart.canTeach.includes(counterOfferedSkill)) {
+    if (!isSkillInList(counterOfferedSkill, proposal.counterpart.canTeach)) {
       return { success: false, error: "You can only offer skills from your 'can teach' list" }
     }
-    if (!proposal.proposer.canTeach.includes(counterRequestedSkill)) {
+    if (!isSkillInList(counterRequestedSkill, proposal.proposer.canTeach)) {
       return { success: false, error: "That skill is not in the proposer's 'can teach' list" }
     }
     await prisma.proposal.update({
       where: { id: proposalId },
-      data: {
-        status: ProposalStatus.COUNTERED,
-        counterOfferedSkill,
-        counterRequestedSkill,
-      },
+      data: { status: ProposalStatus.COUNTERED, counterOfferedSkill, counterRequestedSkill },
     })
   }
 
@@ -188,11 +182,7 @@ export async function cancelSwap(
 
   if (!proposal) return { success: false, error: 'Proposal not found.' }
 
-  const isParty = proposal.proposerId === userIdOrError || proposal.counterpartId === userIdOrError
-  if (!isParty) {
-    return { success: false, error: 'You are not authorised to act on this proposal' }
-  }
-  if (proposal.status !== ProposalStatus.AGREED) {
+  if (!canCancel(proposal, userIdOrError)) {
     return { success: false, error: 'This proposal is no longer open' }
   }
 
