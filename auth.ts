@@ -1,9 +1,17 @@
 import NextAuth from 'next-auth'
+import type { JWT } from 'next-auth/jwt'
 import Credentials from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 
+declare module 'next-auth' {
+  interface Session {
+    user: { id: string; name?: string | null; email?: string | null; image?: string | null }
+  }
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  secret: process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET,
   providers: [
     Credentials({
       credentials: {
@@ -29,4 +37,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   session: { strategy: 'jwt' },
   pages: { signIn: '/auth/signin' },
+  callbacks: {
+    jwt({ token, user }) {
+      if (user?.id) (token as JWT & { id: string }).id = user.id
+      return token
+    },
+    session({ session, token }) {
+      const t = token as JWT & { id?: string }
+      if (t.id) session.user.id = t.id
+      return session
+    },
+  },
 })
