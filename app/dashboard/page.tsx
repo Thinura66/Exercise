@@ -95,9 +95,11 @@ export default async function DashboardPage() {
       </section>
 
       {/* ── Counter Offers Awaiting Your Decision ── */}
-      {counterPendingProposals.length > 0 && (
-        <section className="mb-10">
-          <h2 className="text-lg font-semibold mb-4">Counter Offers</h2>
+      <section className="mb-10">
+        <h2 className="text-lg font-semibold mb-4">Counter Offers</h2>
+        {counterPendingProposals.length === 0 ? (
+          <p className="text-sm text-gray-400 italic">No counter offers awaiting your decision.</p>
+        ) : (
           <div className="flex flex-col gap-4">
             {counterPendingProposals.map((p) => (
               <ProposalCard
@@ -107,8 +109,8 @@ export default async function DashboardPage() {
               />
             ))}
           </div>
-        </section>
-      )}
+        )}
+      </section>
 
       {/* ── Sent Proposals ── */}
       <section className="mb-10">
