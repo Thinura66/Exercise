@@ -49,6 +49,19 @@ export default async function DashboardPage() {
       }),
     ])
 
+  const wantToLearn = sessionUser?.wantToLearn ?? []
+
+  const matchedColleagues = wantToLearn.length > 0
+    ? await prisma.user.findMany({
+        where: {
+          id: { not: userId },
+          canTeach: { hasSome: wantToLearn },
+        },
+        select: { id: true, name: true, canTeach: true },
+        orderBy: { name: 'asc' },
+      })
+    : []
+
   const callerCanTeach = sessionUser?.canTeach ?? []
 
   const totalActive = agreedProposals.length + receivedProposals.length + counterPendingProposals.length
@@ -145,6 +158,72 @@ export default async function DashboardPage() {
             </div>
           ))}
         </div>
+
+        {/* ── Browse Colleagues ── */}
+        {matchedColleagues.length > 0 && (
+          <section className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: '#f59e0b' }} />
+              <div className="flex items-baseline gap-2 flex-1">
+                <h2 className="text-sm font-semibold" style={{ color: '#cbd5e1' }}>Browse Colleagues</h2>
+                <span className="text-xs" style={{ color: '#475569' }}>matched to your learning goals</span>
+              </div>
+              <span
+                className="text-xs font-medium px-2 py-0.5 rounded-full"
+                style={{ background: '#1e293b', color: '#94a3b8', border: '1px solid #334155' }}
+              >
+                {matchedColleagues.length}
+              </span>
+            </div>
+
+            <div className="mb-4" style={{ height: 1, background: '#1e293b' }} />
+
+            <div className="flex flex-col gap-3">
+              {matchedColleagues.map((colleague) => {
+                const matchedSkills = colleague.canTeach.filter((s) => wantToLearn.includes(s))
+                const otherSkills = colleague.canTeach.filter((s) => !wantToLearn.includes(s))
+                return (
+                  <div
+                    key={colleague.id}
+                    className="flex items-center justify-between rounded-xl px-4 py-3"
+                    style={{ background: '#1e293b', border: '1px solid #334155' }}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold mb-1.5" style={{ color: '#f8fafc' }}>{colleague.name}</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {matchedSkills.map((skill) => (
+                          <span
+                            key={skill}
+                            className="text-xs px-2 py-0.5 rounded-full font-medium"
+                            style={{ background: 'rgba(245,158,11,0.12)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.2)' }}
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                        {otherSkills.map((skill) => (
+                          <span
+                            key={skill}
+                            className="text-xs px-2 py-0.5 rounded-full"
+                            style={{ background: '#0f172a', color: '#475569', border: '1px solid #1e293b' }}
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <Link
+                      href={`/profile/${colleague.id}`}
+                      className="ml-4 flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+                      style={{ background: 'rgba(245,158,11,0.1)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.2)' }}
+                    >
+                      Propose →
+                    </Link>
+                  </div>
+                )
+              })}
+            </div>
+          </section>
+        )}
 
         {/* ── Section helper ── */}
         {([
