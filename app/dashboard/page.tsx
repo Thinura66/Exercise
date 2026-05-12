@@ -60,7 +60,7 @@ export default async function DashboardPage() {
         select: { id: true, name: true, canTeach: true },
         orderBy: { name: 'asc' },
       })
-    : []
+    : ([] as { id: string; name: string; canTeach: string[] }[])
 
   const callerCanTeach = sessionUser?.canTeach ?? []
 
