@@ -42,6 +42,7 @@ export async function updateProfile(
   }
 
   revalidatePath('/profile/me')
+  revalidatePath(`/profile/${userIdOrError}`)
   revalidatePath('/dashboard')
   return { success: true }
 }
