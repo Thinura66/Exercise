@@ -23,6 +23,7 @@ export default function SignupForm() {
           type="text"
           placeholder="Full name"
           required
+          autoComplete="name"
           className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
         <label htmlFor="email" className="sr-only">Email address</label>
@@ -32,6 +33,7 @@ export default function SignupForm() {
           type="email"
           placeholder="Email address"
           required
+          autoComplete="email"
           className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
         <label htmlFor="password" className="sr-only">Password</label>
@@ -42,6 +44,7 @@ export default function SignupForm() {
           placeholder="Password (min 8 characters)"
           required
           minLength={8}
+          autoComplete="new-password"
           className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
 
