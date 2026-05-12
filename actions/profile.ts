@@ -42,5 +42,6 @@ export async function updateProfile(
   }
 
   revalidatePath('/profile/me')
+  revalidatePath('/dashboard')
   return { success: true }
 }
