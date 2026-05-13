@@ -310,7 +310,7 @@ export default async function DashboardPage() {
               <p className="text-sm py-2" style={{ color: '#334155', fontStyle: 'italic' }}>{empty}</p>
             ) : (
               <div className="flex flex-col gap-3">
-                {(items as typeof items).map((p) => renderItem(p as never))}
+                {(items as any[]).map((p) => renderItem(p))}
               </div>
             )}
           </section>
