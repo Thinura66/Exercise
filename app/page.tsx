@@ -28,13 +28,6 @@ export default function HomePage() {
           </div>
           <div className="flex items-center gap-3">
             <Link
-              href="/auth/signin"
-              className="text-xs font-medium px-4 py-2 rounded-lg transition-colors"
-              style={{ color: '#94a3b8', border: '1px solid #334155' }}
-            >
-              Sign in
-            </Link>
-            <Link
               href="/auth/signup"
               className="text-xs font-semibold px-4 py-2 rounded-lg transition-all"
               style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)', color: '#0f172a' }}
