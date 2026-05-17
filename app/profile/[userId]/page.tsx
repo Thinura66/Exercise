@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
@@ -62,13 +63,13 @@ export default async function ProfilePage({ params }: Props) {
               <p className="text-sm" style={{ color: '#64748b' }}>
                 Want to update your skills?
               </p>
-              <a
+              <Link
                 href="/profile/me"
                 className="inline-block mt-3 text-xs font-semibold px-3 py-1.5 rounded-lg"
                 style={{ background: 'rgba(245,158,11,0.1)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.2)' }}
               >
                 Edit your profile →
-              </a>
+              </Link>
             </div>
           ) : (
             <ProposeForm

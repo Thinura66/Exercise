@@ -1,14 +1,10 @@
-import { describe, it, expect, beforeAll, beforeEach, afterAll, vi } from 'vitest'
-import type { PrismaClient } from '@prisma/client'
-import type { Pool } from 'pg'
+import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest'
 import { createTestPrisma, createUser, createProposal, closeTestPrisma } from './helpers'
 
 // ── Create test client at module scope (once for the whole suite) ──
-let db: PrismaClient
-let pool: Pool
 const testClient = createTestPrisma()
-db = testClient.db
-pool = testClient.pool
+const db = testClient.db
+const pool = testClient.pool
 
 // ── Module mocks (hoisted before other imports) ──
 vi.mock('@/lib/auth-helpers', () => ({
