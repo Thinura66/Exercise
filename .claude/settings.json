@@ -1,4 +1,12 @@
 {
+  "extraKnownMarketplaces": {
+    "embla-claude-plugins": {
+      "source": {
+        "source": "git",
+        "url": "https://bitbucket.org/emblaftdev/embla-claude-plugins.git"
+      }
+    }
+  },
   "hooks": {
     "PostToolUse": [
       {
@@ -27,12 +35,19 @@
     "commit-commands@claude-plugins-official": true,
     "playwright@claude-plugins-official": true
   },
-  "extraKnownMarketplaces": {
-    "embla-claude-plugins": {
-      "source": {
-        "source": "git",
-        "url": "https://bitbucket.org/emblaftdev/embla-claude-plugins.git"
-      }
-    }
+  "permissions": {
+    "allow": [
+      "mcp__bitbucket__bb_get",
+      "mcp__claude_ai_Atlassian__getJiraIssue",
+      "mcp__plugin_atlassian_atlassian__getAccessibleAtlassianResources",
+      "mcp__plugin_atlassian_atlassian__search",
+      "mcp__plugin_atlassian_atlassian__searchJiraIssuesUsingJql",
+      "mcp__plugin_atlassian_atlassian__getVisibleJiraProjects",
+      "mcp__plugin_atlassian_atlassian__atlassianUserInfo",
+      "mcp__plugin_atlassian_atlassian__lookupJiraAccountId",
+      "mcp__plugin_atlassian_atlassian__getIssueLinkTypes",
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__plugin_context7_context7__query-docs"
+    ]
   }
 }

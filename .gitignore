@@ -43,3 +43,6 @@ next-env.d.ts
 
 /app/generated/prisma
 .superpowers/
+
+# Claude Code local settings (machine-specific, not shared)
+.claude/settings.local.json
