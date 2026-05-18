@@ -21,6 +21,7 @@ interface Props {
   viewerId: string
   counterpartCanTeach?: string[]
   proposerCanTeach?: string[]
+  variant?: 'received' | 'counter' | 'default'
 }
 
 const selectStyle = {
@@ -39,6 +40,7 @@ export default function ProposalCard({
   viewerId,
   counterpartCanTeach = [],
   proposerCanTeach = [],
+  variant,
 }: Props) {
   const [showCounterForm, setShowCounterForm] = useState(false)
 
@@ -51,6 +53,10 @@ export default function ProposalCard({
     null,
   )
 
+  const borderLeft = variant === 'received' ? '3px solid #f59e0b'
+                   : variant === 'counter'  ? '3px solid #a78bfa'
+                   : undefined
+
   const isProposer = viewerId === proposal.proposerId
   const isCounterpart = viewerId === proposal.counterpartId
   const error = (respondState?.success === false ? respondState.error : undefined) ?? (acceptCounterState?.success === false ? acceptCounterState.error : undefined)
@@ -61,7 +67,7 @@ export default function ProposalCard({
   return (
     <div
       className="rounded-xl p-5 w-full"
-      style={{ background: '#1e293b', border: '1px solid #334155' }}
+      style={{ background: '#1e293b', border: '1px solid #334155', borderLeft: borderLeft ?? '1px solid #334155' }}
     >
       {/* Skills row */}
       <div className="flex items-center gap-3 mb-4">
