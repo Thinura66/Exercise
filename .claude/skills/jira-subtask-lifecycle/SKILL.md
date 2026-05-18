@@ -1,12 +1,12 @@
 ---
 name: jira-subtask-lifecycle
-description: Use when implementing a Jira story that has subtasks — transition subtask to In Progress when starting work, to Done when complete, and close the parent story only after all subtasks are Done.
+description: Use when implementing a Jira story that has subtasks — transition subtask to In Progress when starting work, to Done when complete, and close the parent story only after all subtasks are Done. Also covers auto-assigning newly created epics, stories, and subtasks.
 ---
 
 # Jira Subtask Lifecycle
 
 ## Overview
-Keep Jira subtask and parent story statuses in sync with actual development progress. Never close a story until all its subtasks are Done.
+Keep Jira subtask and parent story statuses in sync with actual development progress. Never close a story until all its subtasks are Done. Always assign newly created epics, stories, and subtasks to the current user (ThinuraK@embla.asia).
 
 ## Workflow
 
@@ -27,6 +27,23 @@ digraph subtask_lifecycle {
     "All sibling subtasks Done?" -> "Stop — story stays open" [label="no"];
 }
 ```
+
+## After Creating Any Jira Item (Epic, Story, Subtask)
+
+Immediately after creating any epic, story, or subtask, assign it to **ThinuraK@embla.asia**:
+
+1. Look up the account ID (once per session):
+   ```
+   lookupJiraAccountId(query: "ThinuraK@embla.asia")
+   ```
+   Save the returned `accountId` for the rest of the session.
+
+2. Assign the newly created issue:
+   ```
+   editJiraIssue(issueId: <newIssueKey>, assignee: { id: <accountId> })
+   ```
+
+**Never skip this step** — every created item must be assigned before moving on.
 
 ## Step-by-Step
 
@@ -63,3 +80,4 @@ if (allDone) → transitionJiraIssue(parentStoryId, doneTransitionId)
 | Hardcoding transition IDs | Always look up with `getTransitionsForJiraIssue` |
 | Forgetting to move subtask to In Progress | Transition at the start of work, not just at the end |
 | Transitioning parent manually without subtask check | Follow the workflow — subtask Done triggers the parent check |
+| Not assigning after creation | Always call `editJiraIssue` to assign to ThinuraK@embla.asia immediately after creating any item |
